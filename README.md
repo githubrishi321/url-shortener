@@ -12,12 +12,9 @@ A full-stack URL shortener web application built using **Node.js**, **Express**,
 - 🔗 Copy-to-clipboard button for generated short URLs
 
 ## 📸 Screenshots
-
-> Add screenshots in a `screenshots/` folder for better preview
-
 | Home Page (Logged In) | Short URL Copy Feature |
 |-----------------------|------------------------|
-| ![Home](screenshots/home.png) | ![Copy](screenshots/copy.png) |
+| ![Home](screenshots/home.png) | ![Copy](screenshots/homepage02.png) |
 
 ## 🛠️ Tech Stack
 
