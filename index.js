@@ -14,9 +14,9 @@ const userRoute = require('./routes/user')
 
 
 const app = express();
-const PORT = 8001;
+const PORT = process.env.PORT || 8001;
 
-// ✅ Fixed MongoDB connection string
+
 connectToMongoDB('mongodb://localhost:27017/short-url').then(() => {
   console.log("Mongodb is connected");
 });
@@ -52,8 +52,7 @@ app.use("/" , checkAuth , staticRoute);
 
 
 
-// ✅ Changed from app.use() to app.get()
-// ✅ Added check to prevent crash if shortId is invalid
+
 app.get('/:shortId', async (req, res) => {
   const shortId = req.params.shortId;
 
