@@ -17,7 +17,7 @@ const app = express();
 const PORT = process.env.PORT || 8001;
 
 // ✅ Fixed MongoDB connection string
-connectToMongoDB(process.env.PORT).then(() => {
+connectToMongoDB(process.env.MONGODB_URI).then(() => {
   console.log("Mongodb is connected");
 });
 
