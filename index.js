@@ -14,9 +14,9 @@ const userRoute = require('./routes/user')
 
 
 const app = express();
-const PORT = process.env.PORT || 8001;
+const PORT = 8001;
 
-
+// ✅ Fixed MongoDB connection string
 connectToMongoDB('mongodb://localhost:27017/short-url').then(() => {
   console.log("Mongodb is connected");
 });
