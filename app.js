@@ -1,11 +1,11 @@
-require('dotenv').config();
-
+// app.js
+require('dotenv').config(); // loads .env for local dev
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 
 const { restrictToLoggedinUserOnly, checkAuth } = require('./middlewares/auth');
-const { connectToMongoDB } = require('./connect');
+// DO NOT import or call connectToMongoDB here — index.js handles DB connect
 
 const URL = require('./models/url');
 
@@ -15,9 +15,11 @@ const userRoute = require('./routes/user');
 
 const app = express();
 
-connectToMongoDB(process.env.MONGODB_URI)
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => console.error('❌ MongoDB connection failed:', err));
+// quick debug route (optional) - you can remove later
+app.get('/db-status', (req, res) => {
+  const mongoose = require('mongoose');
+  res.json({ readyState: mongoose.connection.readyState });
+});
 
 app.set('view engine', 'ejs');
 app.set('views', path.resolve('./views'));
@@ -48,4 +50,3 @@ app.get('/:shortId', async (req, res) => {
 });
 
 module.exports = app;
-

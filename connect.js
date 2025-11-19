@@ -1,18 +1,18 @@
+// connect.js
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 let cached = global._mongooseConnection;
 
 async function connectToMongoDB(uri) {
-  const mongoURL = uri || process.env.MONGODB_URI;
+  // fallbacks for env var name differences
+  const envUri = uri || process.env.MONGODB_URI || process.env.MONGO_URI;
+  const mongoURL = envUri || 'mongodb://127.0.0.1:27017/short-url';
 
   if (cached) return cached;
 
-  cached = mongoose.connect(mongoURL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
+  // Do not pass deprecated options for mongoose v6+
+  cached = mongoose.connect(mongoURL);
   global._mongooseConnection = cached;
   return cached;
 }

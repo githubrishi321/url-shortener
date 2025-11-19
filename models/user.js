@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true } // ✅ Moved here — correct usage
+  { timestamps: true } //  Moved here — correct usage
 );
 
 const User = mongoose.model('User', userSchema); // ✅ Capital 'U' for consistency

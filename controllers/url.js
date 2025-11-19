@@ -14,7 +14,7 @@ async function handleGenerateNewShortURL(req, res) {
     createdBy: req.user?._id,
   });
 
-  // ✅ Redirect instead of rendering directly (PRG pattern)
+  //Redirect instead of rendering directly (PRG pattern)
   return res.redirect("/?shortId=" + shortID);
 }
 
