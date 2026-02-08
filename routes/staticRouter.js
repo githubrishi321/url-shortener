@@ -1,21 +1,14 @@
 const express = require('express');
 const URL = require('../models/url');
-const { checkAuth } = require("../middlewares/auth");
+const { checkAuth, restrictToLoggedinUserOnly } = require("../middlewares/auth");
 
 const router = express.Router();
 
-// Home Page Route with optional shortId from query params
-router.get("/", checkAuth, async (req, res) => {
-  if (!req.user) return res.redirect('/login');
+// ===== PUBLIC ROUTES (No authentication required) =====
 
-  const allurls = await URL.find({ createdBy: req.user._id });
-
-  // ✅ Get shortId from query params for success alert
-  return res.render("home", {
-    urls: allurls,
-    user: req.user,
-    id: req.query.shortId || null
-  });
+// Landing Page - Public homepage
+router.get("/", (req, res) => {
+  return res.render("landing");
 });
 
 // Signup Page
@@ -26,6 +19,19 @@ router.get("/signup", (req, res) => {
 // Login Page
 router.get("/login", (req, res) => {
   return res.render("login");
+});
+
+// ===== PROTECTED ROUTES (Authentication required) =====
+
+// Dashboard - User's shortened URLs
+router.get("/dashboard", restrictToLoggedinUserOnly, async (req, res) => {
+  const allurls = await URL.find({ createdBy: req.user._id });
+
+  return res.render("home", {
+    urls: allurls,
+    user: req.user,
+    id: req.query.shortId || null
+  });
 });
 
 module.exports = router;

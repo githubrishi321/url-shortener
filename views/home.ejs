@@ -6,21 +6,38 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>URL Shortener</title>
+  <!-- Google Fonts - Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: #f8f9fa;
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+      min-height: 100vh;
     }
 
     .container {
-      max-width: 700px;
+      max-width: 900px;
       margin-top: 40px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
-      padding: 32px 24px;
+      margin-bottom: 40px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      padding: 40px 32px;
+    }
+
+    h1 {
+      color: #2d3748;
+      font-weight: 700;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .short-link {
@@ -37,6 +54,88 @@
       margin-left: 8px;
     }
 
+    /* Modern Hero Input */
+    .hero-input {
+      height: 60px;
+      border-radius: 30px;
+      /* Pill shape */
+      padding: 0 25px;
+      font-size: 1rem;
+      border: 2px solid #e2e8f0;
+      transition: all 0.3s ease;
+    }
+
+    .hero-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      /* Glow effect */
+    }
+
+    /* URL Card List */
+    .url-card {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      border: 1px solid #f1f3f5;
+    }
+
+    .url-card:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .url-favicon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+
+    .url-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #2d3748;
+      margin-bottom: 4px;
+    }
+
+    .url-short-link {
+      color: #667eea;
+      font-size: 0.95rem;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .url-short-link:hover {
+      text-decoration: underline;
+    }
+
+    .clicks-badge {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .url-expired {
+      opacity: 0.6;
+      background: #f8f9fa;
+    }
+
+    .url-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
     @media (max-width: 576px) {
       .form-row-mobile {
         flex-direction: column;
@@ -50,6 +149,16 @@
       .form-row-mobile .col-3 {
         margin-top: 10px;
       }
+
+      .url-card {
+        padding: 15px;
+      }
+
+      .url-actions {
+        width: 100%;
+        justify-content: flex-start;
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
@@ -59,74 +168,278 @@
     <h1 class="mb-4 text-center">URL Shortener</h1>
 
     <% if (user) { %>
-      <div class="mb-3 text-end">
-        <span>Welcome, <%= user.name %>!</span>
-        <form action="/user/logout" method="post" style="display:inline;">
-          <button type="submit" class="btn btn-outline-danger btn-sm ms-2">Logout</button>
-        </form>
-      </div>
-    <% } else { %>
-      <div class="mb-3 text-end">
-        <a href="/login" class="btn btn-outline-primary btn-sm">Login</a>
-      </div>
-    <% } %>
-
-    <% if (locals.id) { %>
-      <div class="alert alert-success d-flex align-items-center justify-content-between flex-wrap gap-2" role="alert">
-        <div>
-          URL Generated:
-          <a href="/url/<%= id %>" target="_blank" class="short-link" id="shortUrl">
-            http://localhost:8001/url/<%= id %>
-          </a>
-        </div>
-        <div>
-          <button onclick="copyURL()" class="btn btn-sm btn-outline-secondary">Copy</button>
-          <span id="copy-label" class="copied-label" style="display:none;">Copied!</span>
+      <div class="mb-4 p-3 rounded-3"
+        style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border: 1px solid rgba(102, 126, 234, 0.2);">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div>
+            <span class="badge"
+              style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 8px 16px; font-size: 0.9rem;">👤
+              <%= user.name %>
+            </span>
+          </div>
+          <form action="/user/logout" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-sm"
+              style="background: white; color: #667eea; border: 2px solid #667eea; font-weight: 600; padding: 6px 16px; border-radius: 8px; transition: all 0.3s ease;"
+              onmouseover="this.style.background='#667eea'; this.style.color='white';"
+              onmouseout="this.style.background='white'; this.style.color='#667eea';">🚪 Logout</button>
+          </form>
         </div>
       </div>
-    <% } %>
+      <% } else { %>
+        <div class="mb-3 text-end">
+          <a href="/login" class="btn btn-outline-primary btn-sm">Login</a>
+        </div>
+        <% } %>
 
-    <form method="POST" action="/url" class="row g-3 mb-4 form-row-mobile d-flex">
-      <div class="col-9">
-        <input type="text" name="url" class="form-control" placeholder="https://example.com" required />
-      </div>
-      <div class="col-3 d-grid">
-        <button type="submit" class="btn btn-primary">Generate</button>
-      </div>
-    </form>
+          <% if (locals.id) { %>
+            <div class="alert alert-success d-flex align-items-center justify-content-between flex-wrap gap-2"
+              role="alert">
+              <div>
+                URL Generated:
+                <a href="/url/<%= id %>" target="_blank" class="short-link" id="shortUrl">
+                  http://localhost:8001/url/<%= id %>
+                </a>
+              </div>
+              <div>
+                <button onclick="copyURL()" class="btn btn-sm btn-outline-secondary">Copy</button>
+                <span id="copy-label" class="copied-label" style="display:none;">Copied!</span>
+              </div>
+            </div>
+            <% } %>
 
-    <% if (locals.urls && urls.length > 0) { %>
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>S. No</th>
-              <th>ShortID</th>
-              <th>Redirect</th>
-              <th>Clicks</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% urls.forEach((url, index) => { %>
-              <tr>
-                <td><%= index + 1 %></td>
-                <td>
-                  <a href="/url/<%= url.shortId %>" target="_blank" class="short-link"><%= url.shortId %></a>
-                </td>
-                <td>
-                  <a href="<%= url.redirectURL %>" target="_blank"><%= url.redirectURL %></a>
-                </td>
-                <td><%= url.visitHistory.length %></td>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      </div>
-    <% } else { %>
-      <div class="alert alert-info mt-4" role="alert">
-        No URLs have been shortened yet.
-      </div>
-    <% } %>
+              <% if (locals.error) { %>
+                <div class="alert alert-danger" role="alert">
+                  <strong>Error:</strong>
+                  <%= error %>
+                </div>
+                <% } %>
+
+                  <% if (locals.deleted) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                      <strong>Success!</strong> URL deleted successfully.
+                      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <% } %>
+
+                      <% if (locals.updated) { %>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                          <strong>Success!</strong> URL updated successfully.
+                          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        <% } %>
+
+
+
+
+                          <form method="POST" action="/url" class="mb-4">
+                            <div class="row g-3 form-row-mobile">
+                              <div class="col-12">
+                                <label for="url" class="form-label">Enter URL to shorten</label>
+                                <input type="text" name="url" id="url" class="form-control hero-input"
+                                  placeholder="https://example.com" required />
+                              </div>
+                              <div class="col-12">
+                                <label for="customAlias" class="form-label">Custom Alias (Optional)</label>
+                                <input type="text" name="customAlias" id="customAlias" class="form-control"
+                                  placeholder="e.g., github, mylink (leave empty for random)" pattern="[a-zA-Z0-9_-]+"
+                                  title="Only letters, numbers, hyphens, and underscores allowed" />
+                                <small class="text-muted">Letters, numbers, hyphens, and underscores only. Leave blank
+                                  for
+                                  auto-generated alias.</small>
+                              </div>
+                              <div class="col-12">
+                                <label for="expiresIn" class="form-label">Expiration (Optional)</label>
+                                <select name="expiresIn" id="expiresIn" class="form-select">
+                                  <option value="">Never expire</option>
+                                  <option value="1">1 hour</option>
+                                  <option value="6">6 hours</option>
+                                  <option value="24">1 day</option>
+                                  <option value="168">1 week</option>
+                                  <option value="720">1 month</option>
+                                </select>
+                                <small class="text-muted">Link will expire after the selected time period.</small>
+                              </div>
+                              <div class="col-12">
+                                <button type="submit" class="btn btn-primary w-100">Generate Short URL</button>
+                              </div>
+
+                            </div>
+                          </form>
+
+
+                          <% if (locals.urls && urls.length> 0) { %>
+                            <!-- Modern Card-Based URL List -->
+                            <div class="url-list-container mt-4">
+                              <% urls.forEach((url, index)=> { %>
+                                <% const isExpired=url.expiresAt && new Date()> new Date(url.expiresAt); %>
+                                  <div class="url-card <%= isExpired ? 'url-expired' : '' %>"
+                                    id="url-card-<%= url._id %>">
+                                    <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
+                                      <!-- Left: Favicon + Info -->
+                                      <div class="d-flex align-items-start flex-grow-1" style="min-width: 0;">
+                                        <!-- Favicon -->
+                                        <img
+                                          src="https://www.google.com/s2/favicons?domain=<%= url.redirectURL %>&sz=64"
+                                          alt="favicon" class="url-favicon"
+                                          onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22><rect width=%2232%22 height=%2232%22 fill=%22%23e2e8f0%22/><text x=%2216%22 y=%2220%22 text-anchor=%22middle%22 font-size=%2218%22>🔗</text></svg>'" />
+
+                                        <div class="flex-grow-1" style="min-width: 0;">
+                                          <!-- Title (Short ID) -->
+                                          <div class="url-title">
+                                            <%= url.shortId %>
+                                              <% if (isExpired) { %>
+                                                <span class="badge bg-danger ms-2">Expired</span>
+                                                <% } %>
+                                          </div>
+
+                                          <!-- Short Link -->
+                                          <a href="/url/<%= url.shortId %>" target="_blank"
+                                            class="url-short-link d-inline-block">
+                                            <%= url.shortId %>
+                                          </a>
+
+                                          <a href="/<%= url.shortId %>?preview=1" target="_blank" class="ms-2"
+                                            title="Preview before redirect">
+                                            <span class="badge bg-secondary">🔍 Preview</span>
+                                          </a>
+
+                                          <!-- Redirect URL (Small) -->
+                                          <div class="text-muted mt-1"
+                                            style="font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            <strong>→</strong> <a href="<%= url.redirectURL %>" target="_blank"
+                                              class="text-muted">
+                                              <%= url.redirectURL %>
+                                            </a>
+                                          </div>
+
+                                          <!-- Expiration Info -->
+                                          <% if (url.expiresAt) { %>
+                                            <div class="text-muted mt-1" style="font-size: 0.8rem;">
+                                              ⏰ Expires: <%= new Date(url.expiresAt).toLocaleString() %>
+                                            </div>
+                                            <% } %>
+                                        </div>
+                                      </div>
+
+                                      <!-- Right: Clicks + Actions -->
+                                      <div class="d-flex flex-column align-items-end gap-2">
+                                        <!-- Clicks Badge -->
+                                        <div class="clicks-badge">
+                                          <%= url.visitHistory.length %>
+                                            <%= url.visitHistory.length===1 ? 'Click' : 'Clicks' %>
+                                        </div>
+
+                                        <!-- Action Buttons -->
+                                        <div class="url-actions">
+                                          <button class="btn btn-sm btn-success"
+                                            onclick="showShareModal('<%= url.shortId %>')">
+                                            🔗 Share
+                                          </button>
+                                          <button class="btn btn-sm btn-info"
+                                            onclick="showQRCode('<%= url.shortId %>')">
+                                            📱 QR
+                                          </button>
+                                          <button class="btn btn-sm btn-warning"
+                                            onclick="toggleEditForm('<%= url._id %>')">
+                                            ✏️ Edit
+                                          </button>
+                                          <form action="/url/delete/<%= url._id %>" method="post"
+                                            style="display:inline;"
+                                            onsubmit="return confirm('Are you sure you want to delete this URL?');">
+                                            <button type="submit" class="btn btn-sm btn-danger">🗑️ Delete</button>
+                                          </form>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <!-- Hidden edit form -->
+                                    <div id="edit-form-<%= url._id %>" style="display:none;"
+                                      class="mt-3 pt-3 border-top">
+                                      <form action="/url/update/<%= url._id %>" method="post" class="row g-3">
+                                        <div class="col-md-6">
+                                          <label class="form-label">Redirect URL</label>
+                                          <input type="text" name="redirectURL" class="form-control"
+                                            value="<%= url.redirectURL %>" required />
+                                        </div>
+                                        <div class="col-md-4">
+                                          <label class="form-label">Expiration</label>
+                                          <select name="expiresIn" class="form-select">
+                                            <option value="never">Never expire</option>
+                                            <option value="1">1 hour</option>
+                                            <option value="6">6 hours</option>
+                                            <option value="24">1 day</option>
+                                            <option value="168">1 week</option>
+                                            <option value="720">1 month</option>
+                                          </select>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end gap-2">
+                                          <button type="submit" class="btn btn-success">Save</button>
+                                          <button type="button" class="btn btn-secondary"
+                                            onclick="toggleEditForm('<%= url._id %>')">Cancel</button>
+                                        </div>
+                                      </form>
+                                    </div>
+                                  </div>
+                                  <% }) %>
+                            </div>
+                            <% } else { %>
+                              <div class="alert alert-info mt-4" role="alert">
+                                No URLs have been shortened yet.
+                              </div>
+                              <% } %>
+
+                                <!-- QR Code Modal -->
+                                <div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true">
+                                  <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title">QR Code for Short URL</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                          aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body text-center">
+                                        <div id="qr-loading" class="spinner-border text-primary" role="status">
+                                          <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <div id="qr-container" style="display:none;">
+                                          <img id="qr-image" src="" alt="QR Code" class="img-fluid mb-3"
+                                            style="max-width: 300px;" />
+                                          <p class="text-muted" id="qr-url"></p>
+                                          <a id="qr-download" href="" download="qr-code.png" class="btn btn-primary">
+                                            📥 Download QR Code
+                                          </a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <!-- Share Modal -->
+                                <div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
+                                  <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title">🔗 Share Short URL</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                          aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                        <p class="text-muted mb-3">Share this link on social media:</p>
+                                        <div class="d-grid gap-2" id="share-buttons">
+                                          <!-- Share buttons will be inserted here by JavaScript -->
+                                        </div>
+                                        <hr class="my-3">
+                                        <div class="input-group">
+                                          <input type="text" class="form-control" id="share-url" readonly>
+                                          <button class="btn btn-outline-primary" onclick="copyShareURL()">
+                                            📋 Copy
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
   </div>
 
   <!-- Bootstrap JS -->
@@ -143,6 +456,152 @@
         }, 2000);
       });
     }
+
+    function toggleEditForm(urlId) {
+      const editForm = document.getElementById('edit-form-' + urlId);
+      if (editForm.style.display === 'none') {
+        editForm.style.display = 'table-row';
+      } else {
+        editForm.style.display = 'none';
+      }
+    }
+
+    async function showQRCode(shortId) {
+      const modal = new bootstrap.Modal(document.getElementById('qrModal'));
+      const loading = document.getElementById('qr-loading');
+      const container = document.getElementById('qr-container');
+      const qrImage = document.getElementById('qr-image');
+      const qrURL = document.getElementById('qr-url');
+      const qrDownload = document.getElementById('qr-download');
+
+      // Show modal and loading
+      modal.show();
+      loading.style.display = 'block';
+      container.style.display = 'none';
+
+      try {
+        const response = await fetch(`/url/qrcode/${shortId}`);
+        const data = await response.json();
+
+        if (data.success) {
+          qrImage.src = data.qrCode;
+          qrURL.textContent = data.shortURL;
+          qrDownload.href = data.qrCode;
+          qrDownload.download = `qr-${shortId}.png`;
+
+          loading.style.display = 'none';
+          container.style.display = 'block';
+        } else {
+          alert('Failed to generate QR code');
+          modal.hide();
+        }
+      } catch (error) {
+        console.error('Error generating QR code:', error);
+        alert('Failed to generate QR code');
+        modal.hide();
+      }
+    }
+
+    function showShareModal(shortId) {
+      const modal = new bootstrap.Modal(document.getElementById('shareModal'));
+      const shareButtons = document.getElementById('share-buttons');
+      const shareUrlInput = document.getElementById('share-url');
+
+      // Construct full short URL
+      const shortURL = `${window.location.protocol}//${window.location.host}/${shortId}`;
+      shareUrlInput.value = shortURL;
+
+      // Create share buttons for different platforms
+      const encodedURL = encodeURIComponent(shortURL);
+      const shareText = encodeURIComponent('Check out this link!');
+
+      shareButtons.innerHTML = `
+        <a href="https://twitter.com/intent/tweet?url=${encodedURL}&text=${shareText}" 
+           target="_blank" class="btn btn-primary" style="background-color: #1DA1F2; border-color: #1DA1F2;">
+          <i class="fab fa-twitter"></i> 𝕏 Share on Twitter/X
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodedURL}" 
+           target="_blank" class="btn btn-primary" style="background-color: #0077B5; border-color: #0077B5;">
+          💼 Share on LinkedIn
+        </a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${encodedURL}" 
+           target="_blank" class="btn btn-primary" style="background-color: #1877F2; border-color: #1877F2;">
+          📘 Share on Facebook
+        </a>
+        <a href="https://wa.me/?text=${shareText}%20${encodedURL}" 
+           target="_blank" class="btn btn-success" style="background-color: #25D366; border-color: #25D366;">
+          💬 Share on WhatsApp
+        </a>
+      `;
+
+      modal.show();
+    }
+
+    function copyShareURL() {
+      const shareUrlInput = document.getElementById('share-url');
+      shareUrlInput.select();
+      navigator.clipboard.writeText(shareUrlInput.value).then(() => {
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✓ Copied!';
+        btn.classList.add('btn-success');
+        btn.classList.remove('btn-outline-primary');
+
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('btn-success');
+          btn.classList.add('btn-outline-primary');
+        }, 2000);
+      });
+    }
+
+    // Auto-refresh click counts every 10 seconds
+    function refreshClickCounts() {
+      const urlCards = document.querySelectorAll('[id^="url-card-"]');
+
+      urlCards.forEach(card => {
+        const clicksBadge = card.querySelector('.clicks-badge');
+        const shortLink = card.querySelector('.url-short-link');
+
+        if (clicksBadge && shortLink) {
+          const shortId = shortLink.textContent.trim();
+
+          // Fetch analytics for this URL
+          fetch(`/url/analytics/${shortId}`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.totalClicks !== undefined) {
+                const clickCount = data.totalClicks;
+                const oldCount = parseInt(clicksBadge.textContent);
+
+                clicksBadge.textContent = `${clickCount} ${clickCount === 1 ? 'Click' : 'Clicks'}`;
+
+                // Add pulse animation when count changes
+                if (clickCount !== oldCount && !isNaN(oldCount)) {
+                  clicksBadge.style.animation = 'pulse 0.5s ease';
+                  setTimeout(() => {
+                    clicksBadge.style.animation = '';
+                  }, 500);
+                }
+              }
+            })
+            .catch(err => console.log('Silent refresh'));
+        }
+      });
+    }
+
+    // Auto-refresh every 10 seconds
+    setInterval(refreshClickCounts, 10000);
+
+    // Add pulse animation CSS
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.15); }
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 </body>
 

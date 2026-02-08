@@ -139,17 +139,13 @@ A full-stack URL shortener web application built using **Node.js**, **Express**,
 
 ## 🌐 Deployment
 
-This project is configured for **Vercel** deployment with `vercel.json` and serverless functions.
+This project is configured for **render** deployment 
 
 ```bash
 # Deploy to Vercel
 vercel --prod
 ```
 
-## 📄 Additional Documentation
-
-- [RESUME_POINTS.md](./RESUME_POINTS.md) - Key resume points with quantitative metrics
-- [TECHNICAL_INTERVIEW_QA.md](./TECHNICAL_INTERVIEW_QA.md) - 110+ interview Q&A for this project
 
 ## 👨‍💻 Author
 

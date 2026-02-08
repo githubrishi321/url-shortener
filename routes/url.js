@@ -1,12 +1,22 @@
 const express = require('express');
-const { handleGenerateNewShortURL, handleGetAnalytics } = require("../controllers/url");
+const { handleGenerateNewShortURL, handleGetAnalytics, handleDeleteURL, handleUpdateURL, handleGenerateQRCode } = require("../controllers/url");
 const URL = require('../models/url');
 const { restrictToLoggedinUserOnly } = require("../middlewares/auth");
+const { urlCreationLimiter, qrCodeLimiter } = require("../middlewares/rateLimiter");
 
 const router = express.Router();
 
-// ✅ Only this POST route is protected
-router.post('/', restrictToLoggedinUserOnly, handleGenerateNewShortURL);
+// ✅ URL creation with rate limiting (20 per hour)
+router.post('/', restrictToLoggedinUserOnly, urlCreationLimiter, handleGenerateNewShortURL);
+
+// ✅ Delete URL (protected)
+router.post('/delete/:id', restrictToLoggedinUserOnly, handleDeleteURL);
+
+// ✅ Update URL (protected)
+router.post('/update/:id', restrictToLoggedinUserOnly, handleUpdateURL);
+
+// ✅ Generate QR code with rate limiting (50 per hour)
+router.get('/qrcode/:shortId', qrCodeLimiter, handleGenerateQRCode);
 
 // ✅ Anyone can view analytics
 router.get('/analytics/:shortId', handleGetAnalytics);

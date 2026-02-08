@@ -1,12 +1,18 @@
 const express = require('express');
-const { handleUserSignup , handleUserLogin } = require('../controllers/user');
+const { handleUserSignup, handleUserLogin } = require('../controllers/user');
+const { authLimiter } = require('../middlewares/rateLimiter');
 const router = express.Router(); // ✅ Capital 'R'
 
-router.post('/', handleUserSignup);
-router.post('/login' , handleUserLogin);
+// ✅ Signup with rate limiting (5 attempts per 15 minutes)
+router.post('/', authLimiter, handleUserSignup);
+
+// ✅ Login with rate limiting (5 attempts per 15 minutes)
+router.post('/login', authLimiter, handleUserLogin);
+
+// ✅ Logout (no rate limiting needed)
 router.post('/logout', (req, res) => {
   res.clearCookie('uid');
-  res.redirect('/login');
+  res.redirect('/');
 });
 
 
