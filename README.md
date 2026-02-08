@@ -146,11 +146,6 @@ This project is configured for **Vercel** deployment with `vercel.json` and serv
 vercel --prod
 ```
 
-## 📄 Additional Documentation
-
-- [RESUME_POINTS.md](./RESUME_POINTS.md) - Key resume points with quantitative metrics
-- [TECHNICAL_INTERVIEW_QA.md](./TECHNICAL_INTERVIEW_QA.md) - 110+ interview Q&A for this project
-
 ## 👨‍💻 Author
 
 **Rishi** - [GitHub](https://github.com/githubrishi321)
